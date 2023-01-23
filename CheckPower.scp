@@ -1,0 +1,45 @@
+################################################
+:global ifstatus
+:global date1
+:global date2
+:global globalDiff
+##--------------------------------------------##
+:local LOG false
+:local Ifce1   [/interface ethernet get number=1 name]
+:local Ifce2   [/interface ethernet get number=4 name]
+:local URLON   "https://api.telegram.org/bot874055243:AAEJ0fvbtQHAeUGyJUPf4f6e2y4chOYRnW0/sendMessage\?chat_id=-1001795546103&text=%F0%9F%94%B5 Power is ON"
+:local URLOFF  "https://api.telegram.org/bot874055243:AAEJ0fvbtQHAeUGyJUPf4f6e2y4chOYRnW0/sendMessage\?chat_id=-1001795546103&text=%F0%9F%94%B4 Power is OFF"
+##--------------------------------------------##
+:if ($LOG) do={:log info "Script CheckPower started"}
+:if ($LOG) do={:log info "Interfaces $Ifce1 and $Ifce2 is defined"}
+:if ($LOG) do={
+	:set $date2 "$[/system clock get date] $[/system clock get time]";
+	/system script run diffDate;
+	:if ([/interface ethernet get $Ifce1 running] and [/interface ethernet get $Ifce2]) do={ 
+		:log info  "Link UP. Power is ON ($globalDiff)"
+		} else={ 
+		:log info  "Link DOWN. Power is OFF ($globalDiff)";
+		}
+	}
+##--------------------------------------------##
+:if ([/interface ethernet get $Ifce1 running] and [/interface ethernet get $Ifce2 running]) do={
+	:if ($ifstatus="down") do={
+		:set $date2 "$[/system clock get date] $[/system clock get time]";
+		/system script run diffDate;
+		/tool fetch url="$URLON ($globalDiff)" dst-path=Log.txt
+#		/tool fetch url="$URLON" dst-path=Log.txt;
+		:if ($LOG) do={:log info "Link UP. Power is ON ($globalDiff)"};
+		:set $date1 "$[/system clock get date] $[/system clock get time]";
+	}
+	:set $ifstatus "up";
+} else={
+	:if ($ifstatus="up") do={
+		:set $date2 "$[/system clock get date] $[/system clock get time]";
+		/system script run diffDate;
+		/tool fetch url="$URLOFF ($globalDiff)" dst-path=Log.txt;
+#		/tool fetch url="$URLOFF" dst-path=Log.txt;
+		:if ($LOG) do={:log info "Link DOWN. Power is OFF ($globalDiff)"};
+		:set $date1 "$[/system clock get date] $[/system clock get time]";
+	}
+	:set $ifstatus "down"
+}
