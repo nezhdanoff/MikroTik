@@ -10,26 +10,18 @@
 :local URLOFF  "https://api.telegram.org/bot874055243:AAEJ0fvbtQHAeUGyJUPf4f6e2y4chOYRnW0/sendMessage\?chat_id=-1001795546103&text=%F0%9F%94%B4 Power is OFF"
 ##------ Block for Debug ----------------------##
 :if ($LOG) do={:log info "Script CheckPower started"}
-:if ($LOG) do={:log info "Interfaces $Ifce1 and $Ifce2 is defined"}
-:if ($LOG) do={
-	:set $date2 "$[/system clock get date] $[/system clock get time]";
-	/system script run diffDate;
-	:if ([/interface ethernet get $Ifce1 running] and [/interface ethernet get $Ifce2]) do={ 
-		:log info  "Link UP. Power is ON ($globalDiff)"
-		} else={ 
-		:log info  "Link DOWN. Power is OFF ($globalDiff)";
-		}
-	}
 ##------- Check of any local interface from 1 to 4 is UP ----------##
 :for i from 1 to 4 do={
 	:set $isUP {$isUP or [/interface ethernet get number=$i running]};  \
 }
+
+:if ($LOG) do={:log info "Any local interface is UP = $isUP"}
+
 :if ($isUP) do={
 	:if ($ifstatus="down") do={
 		:set $date2 "$[/system clock get date] $[/system clock get time]";
 		/system script run diffDate;
 		/tool fetch url="$URLON ($globalDiff)" dst-path=Log.txt
-#		/tool fetch url="$URLON" dst-path=Log.txt;
 		:if ($LOG) do={:log info "Link UP. Power is ON ($globalDiff)"};
 		:set $date1 "$[/system clock get date] $[/system clock get time]";
 	}
@@ -39,9 +31,19 @@
 		:set $date2 "$[/system clock get date] $[/system clock get time]";
 		/system script run diffDate;
 		/tool fetch url="$URLOFF ($globalDiff)" dst-path=Log.txt;
-#		/tool fetch url="$URLOFF" dst-path=Log.txt;
 		:if ($LOG) do={:log info "Link DOWN. Power is OFF ($globalDiff)"};
 		:set $date1 "$[/system clock get date] $[/system clock get time]";
 	}
 	:set $ifstatus "down"
 }
+
+:if ($LOG) do={
+	:set $date2 "$[/system clock get date] $[/system clock get time]";
+	/system script run diffDate;
+	:if ($isUP) do={ 
+		:log info  "Link UP. Power is ON ($globalDiff)"
+		} else={ 
+		:log info  "Link DOWN. Power is OFF ($globalDiff)";
+		}
+	}
+	
