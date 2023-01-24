@@ -4,15 +4,16 @@
 :global date2
 :global globalDiff
 ##--------------------------------------------##
-:local LOG false
+:local LOG true
 :local isUP false
 :local URLON   "https://api.telegram.org/bot874055243:AAEJ0fvbtQHAeUGyJUPf4f6e2y4chOYRnW0/sendMessage\?chat_id=-1001795546103&text=%F0%9F%94%B5 Power is ON"
 :local URLOFF  "https://api.telegram.org/bot874055243:AAEJ0fvbtQHAeUGyJUPf4f6e2y4chOYRnW0/sendMessage\?chat_id=-1001795546103&text=%F0%9F%94%B4 Power is OFF"
 ##------ Block for Debug ----------------------##
 :if ($LOG) do={:log info "Script CheckPower started"}
 ##------- Check of any local interface from 1 to 4 is UP ----------##
+:set $isUP false;
 :for i from 1 to 4 do={
-	:set $isUP {$isUP or [/interface ethernet get number=$i running]};  \
+	:set $isUP {$isUP or [/interface ethernet get number=$i running]};  
 }
 
 :if ($LOG) do={:log info "Any local interface is UP = $isUP"}
@@ -36,14 +37,3 @@
 	}
 	:set $ifstatus "down"
 }
-
-:if ($LOG) do={
-	:set $date2 "$[/system clock get date] $[/system clock get time]";
-	/system script run diffDate;
-	:if ($isUP) do={ 
-		:log info  "Link UP. Power is ON ($globalDiff)"
-		} else={ 
-		:log info  "Link DOWN. Power is OFF ($globalDiff)";
-		}
-	}
-	
