@@ -3,6 +3,8 @@
 :global date1
 :global date2
 :global globalDiff
+:global UpdateDate1 do={:global date1; :set $date1 "$[/system clock get date] $[/system clock get time]";}
+:global UpdateDate2 do={:global date2; :set $date2 "$[/system clock get date] $[/system clock get time]";}
 
 ##--------------------------------------------##
 :local isLOG true
@@ -41,7 +43,7 @@
 		/system script run diffDate;
 		/tool fetch url=$UrlON dst-path=Log.txt
 		:if ($isLOG) do={:log info "Link UP. Power is ON ($globalDiff)"};
-		:set $date1 "$[/system clock get date] $[/system clock get time]";
+		$UpdateDate1;
 		}
 	:set $ifstatus "up"
 	} else={
@@ -52,13 +54,15 @@
 		/system script run diffDate;
 		/tool fetch url=$UrlOFF dst-path=Log.txt
 		:if ($isLOG) do={:log info "Link DOWN. Power is OFF ($globalDiff)"};
-		:set $date1 "$[/system clock get date] $[/system clock get time]";
+		$UpdateDate1;
 		}
 	:set $ifstatus "down"
 	}
 
 :if ($isLOG) do={
-	:set $date2 "$[/system clock get date] $[/system clock get time]";
+	:log info  "before function UpdateDate2 date2 = $date2"
+	$UpdateDate2;
+	:log info  "after function UpdateDate2 date2 = $date2"
 	/system script run diffDate;
 	:if ($isUP) do={ 
 		:log info  "Link UP. Power is ON ($globalDiff)"
