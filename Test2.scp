@@ -34,7 +34,6 @@
 }
 :if ($isLOG) do={:log info "At least one local interface is UP = $isUP"}
 
-
 :if ($isUP=true) do={
 	:if ($isLOG) do={:log info "Step isUP"};
 	:if ($ifstatus="down") do={
