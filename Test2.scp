@@ -44,7 +44,7 @@
 		:set $date1 "$[/system clock get date] $[/system clock get time]";
 		}
 	:set $ifstatus "up"
-	}  else={
+	} else={
 		:if ($isLOG) do={:log info "Step Else"};
 		:if ($ifstatus="up") do={
 		:if ($isLOG) do={:log info "Change status to Down"};
