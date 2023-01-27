@@ -18,7 +18,6 @@
 :local Off "Power is OFF"
 
 ##------ Block for Debug ----------------------##
-
 :if ($isLOG) do={:log info "Script Test1 started"}
 
 ##------- Check of any local interface from 1 to 4 is UP ----------##
@@ -26,6 +25,7 @@
 :for i from 1 to 4 do={
 	:set $InterfaceState [/interface ethernet get number=$i running];  
 	:set $isUP {$isUP or [/interface ethernet get number=$i running]};  
+##------ Block for Debug ----------------------##
 	:if ($isLOG) do={:log info "InterfaceState ($i) = $InterfaceState "}
 	:if ($isLOG) do={:log info "isUP = $isUP "}
 }
@@ -39,7 +39,7 @@
 		:set $date2 "$[/system clock get date] $[/system clock get time]";
 		/system script run diffDate;
 		/tool fetch url="$ChatURL&text=$Blue $On ($globalDiff)" dst-path=Log.txt
-		:if ($LOG) do={:log info "Link UP. Power is ON ($globalDiff)"};
+		:if ($isLOG) do={:log info "Link UP. Power is ON ($globalDiff)"};
 		:set $date1 "$[/system clock get date] $[/system clock get time]";
 	}
 	:set $ifstatus "up";
@@ -50,7 +50,7 @@
 		:set $date2 "$[/system clock get date] $[/system clock get time]";
 		/system script run diffDate;
 		/tool fetch url="$ChatURL&text=$Red $Off ($globalDiff)" dst-path=Log.txt;
-		:if ($LOG) do={:log info "Link DOWN. Power is OFF ($globalDiff)"};
+		:if ($isLOG) do={:log info "Link DOWN. Power is OFF ($globalDiff)"};
 		:set $date1 "$[/system clock get date] $[/system clock get time]";
 	}
 	:set $ifstatus "down"
